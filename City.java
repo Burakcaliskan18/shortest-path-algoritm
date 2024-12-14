@@ -1,16 +1,16 @@
 package GitDeneme;
 public class City {
-    private String label;
+    private String name;
 
-    public City(String label) {
-        this.label = label;
+    public City(String name) {
+        this.name = name;
     }
-    public String getLabel() {
-        return label;
+    public String getName() {
+        return name;
     }
     //To prevent the wrong method from being called
     @Override
     public String toString() {
-        return label;
+        return name;
     }
 }
