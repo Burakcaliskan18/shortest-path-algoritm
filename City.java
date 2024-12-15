@@ -8,7 +8,6 @@ public class City {
     public String getName() {
         return name;
     }
-    //To prevent the wrong method from being called
     @Override
     public String toString() {
         return name;
