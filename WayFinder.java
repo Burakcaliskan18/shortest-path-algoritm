@@ -1,4 +1,8 @@
 package GitDeneme;
+
+import java.util.Arrays;
+import java.util.Formatter;
+
 public class WayFinder {
 
     // Method to find a path and display the details
@@ -14,6 +18,7 @@ public class WayFinder {
         System.out.println("Number of cities: " + cityCount);
         System.out.println("Number of routes: " + routeCount);
         System.out.println("Cities: ");
+
         for (City city : cities) {
             System.out.println("- " + city.getName());
         }
@@ -21,15 +26,28 @@ public class WayFinder {
         for (String[] route : routes) {
             System.out.println("- From " + route[0] + " to " + route[1] + " with cost " + route[2]);
         }
-
         // Call the pathfinding algorithm
-        int roadSum = findWay(routes, routeCount, startCity, endCity);
+        int roadSum = findingTheWay(routes, routeCount, startCity, endCity);
         if (roadSum != -1) {
             System.out.println("Shortest total road time from " + startCity + " to " + endCity + ": " + roadSum);
         }
-    }
+        Formatter f = null;
 
-    public static int findWay(String[][] routes, int routeCount, String startCity, String endCity) {
+        try{
+            f = new Formatter("output.txt");
+            f.format("%s, %s\nFastest Way:",startCity,endCity);
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong.");
+        } finally {
+            if (f != null) {
+                f.close();
+
+        }
+    }
+        }
+
+    public static int findingTheWay(String[][] routes, int routeCount, String startCity, String endCity) {
         // Create a list of all unique cities
         String[] cities = new String[routeCount * 2]; // Maximum size, since each route can have 2 cities
         int citiesCount = 0;
@@ -57,8 +75,11 @@ public class WayFinder {
 
         // Create an array to keep track of the shortest distance to each city
         int[] distances = new int[citiesCount];
+        String[] travelledCities = new String[citiesCount];
+
         for(int i=0; i<citiesCount;i++){
             distances[i]=Integer.MAX_VALUE;
+            travelledCities[i]=null;
         }
 
         distances[startCityIndex] = 0; // Starting city has distance 0
@@ -107,6 +128,7 @@ public class WayFinder {
                     // If the new distance is shorter, update the distance for the next city
                     if (newDistance < distances[nextCityIndex]) {
                         distances[nextCityIndex] = newDistance;
+                        travelledCities[nextCityIndex] = cities[currentCityIndex];
                     }
                 }
             }
@@ -127,9 +149,15 @@ public class WayFinder {
     private static int findCityIndex(String[] cities, int citiesCount, String city) {
         for (int i = 0; i < citiesCount; i++) {
             if (cities[i].equals(city)) {
+
                 return i;
             }
         }
         return -1; // City not found
     }
+
+
+
+
+
 }
