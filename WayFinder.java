@@ -1,4 +1,135 @@
 package GitDeneme;
-
 public class WayFinder {
+
+    // Method to find a path and display the details
+    public void findPath() {
+        int cityCount = Main.getCityCount();
+        int routeCount = Main.getRouteCount();
+        City[] cities = Main.getCities();
+        String[][] routes = Main.getRoutes();
+        String startCity = Main.getStartCity();
+        String endCity = Main.getEndCity();
+
+        System.out.println("Finding path from " + startCity + " to " + endCity + "...");
+        System.out.println("Number of cities: " + cityCount);
+        System.out.println("Number of routes: " + routeCount);
+        System.out.println("Cities: ");
+        for (City city : cities) {
+            System.out.println("- " + city.getName());
+        }
+        System.out.println("Routes: ");
+        for (String[] route : routes) {
+            System.out.println("- From " + route[0] + " to " + route[1] + " with cost " + route[2]);
+        }
+
+        // Call the pathfinding algorithm
+        int roadSum = findWay(routes, routeCount, startCity, endCity);
+        if (roadSum != -1) {
+            System.out.println("Shortest total road time from " + startCity + " to " + endCity + ": " + roadSum);
+        }
+    }
+
+    public static int findWay(String[][] routes, int routeCount, String startCity, String endCity) {
+        // Create a list of all unique cities
+        String[] cities = new String[routeCount * 2]; // Maximum size, since each route can have 2 cities
+        int citiesCount = 0;
+
+        // Populate the cities array
+        for (int i = 0; i < routeCount; i++) {
+            String fromCity = routes[i][0];
+            String toCity = routes[i][1];
+            if (!containsCity(cities, citiesCount, fromCity)) {
+                cities[citiesCount++] = fromCity;
+            }
+            if (!containsCity(cities, citiesCount, toCity)) {
+                cities[citiesCount++] = toCity;
+            }
+        }
+
+        // Find the indices of the start and end cities
+        int startCityIndex = findCityIndex(cities, citiesCount, startCity);
+        int endCityIndex = findCityIndex(cities, citiesCount, endCity);
+
+        if (startCityIndex == -1 || endCityIndex == -1) {
+            System.out.println("Error: Start or end city not found.");
+            return -1;
+        }
+
+        // Create an array to keep track of the shortest distance to each city
+        int[] distances = new int[citiesCount];
+        for(int i=0; i<citiesCount;i++){
+            distances[i]=Integer.MAX_VALUE;
+        }
+
+        distances[startCityIndex] = 0; // Starting city has distance 0
+
+        boolean[] visited = new boolean[citiesCount]; // To track visited cities
+
+        while (true) {
+            // Find the city with the smallest distance that hasn't been visited yet
+            int currentCityIndex = -1;
+            int currentDistance = Integer.MAX_VALUE;
+            for (int i = 0; i < citiesCount; i++) {
+                if (!visited[i] && distances[i] < currentDistance) {
+                    currentDistance = distances[i];
+                    currentCityIndex = i;
+                }
+            }
+
+            if (currentCityIndex == -1) {
+                // If no valid city is found, no path exists
+                System.out.println("Error: No path exists from " + startCity + " to " + endCity);
+                return -1;
+            }
+
+            // Mark the current city as visited
+            visited[currentCityIndex] = true;
+
+            // If we have reached the destination city, return the distance
+            if (currentCityIndex == endCityIndex) {
+                return distances[currentCityIndex];
+            }
+
+            // Explore the routes from the current city
+            for (int i = 0; i < routeCount; i++) {
+                // Check if the route starts from the current city
+                if (routes[i][0].equals(cities[currentCityIndex])) {
+                    String nextCity = routes[i][1];
+                    int roadTime = Integer.parseInt(routes[i][2]);
+
+                    // Find the index of the next city
+                    int nextCityIndex = findCityIndex(cities, citiesCount, nextCity);
+                    if (nextCityIndex == -1) continue; // Skip if the next city is not found
+
+                    // Calculate the new distance to the next city
+                    int newDistance = distances[currentCityIndex] + roadTime;
+
+                    // If the new distance is shorter, update the distance for the next city
+                    if (newDistance < distances[nextCityIndex]) {
+                        distances[nextCityIndex] = newDistance;
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper method to check if a city is already in the cities array
+    private static boolean containsCity(String[] cities, int citiesCount, String city) {
+        for (int i = 0; i < citiesCount; i++) {
+            if (cities[i].equals(city)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Helper method to find the index of a city in the cities array
+    private static int findCityIndex(String[] cities, int citiesCount, String city) {
+        for (int i = 0; i < citiesCount; i++) {
+            if (cities[i].equals(city)) {
+                return i;
+            }
+        }
+        return -1; // City not found
+    }
 }
