@@ -1,41 +1,30 @@
 package GitDeneme;
 
-import java.util.Arrays;
 import java.util.Formatter;
 
 public class WayFinder {
 
     // Method to find a path and display the details
     public void findPath() {
-        int cityCount = Main.getCityCount();
         int routeCount = Main.getRouteCount();
-        City[] cities = Main.getCities();
         String[][] routes = Main.getRoutes();
         String startCity = Main.getStartCity();
         String endCity = Main.getEndCity();
 
-        System.out.println("Finding path from " + startCity + " to " + endCity + "...");
-        System.out.println("Number of cities: " + cityCount);
-        System.out.println("Number of routes: " + routeCount);
-        System.out.println("Cities: ");
-
-        for (City city : cities) {
-            System.out.println("- " + city.getName());
-        }
         System.out.println("Routes: ");
         for (String[] route : routes) {
             System.out.println("- From " + route[0] + " to " + route[1] + " with cost " + route[2]);
         }
         // Call the pathfinding algorithm
-        int roadSum = findingTheWay(routes, routeCount, startCity, endCity);
-        if (roadSum != -1) {
-            System.out.println("Shortest total road time from " + startCity + " to " + endCity + ": " + roadSum);
-        }
+        String roadSum = findingTheWay(routes, routeCount, startCity, endCity);
+//        if (roadSum != -1) {
+//            System.out.println("Shortest total road time from " + startCity + " to " + endCity + ": " + roadSum);
+//        }
         Formatter f = null;
 
-        try{
+        try {
             f = new Formatter("output.txt");
-            f.format("%s, %s\nFastest Way:",startCity,endCity);
+            f.format(roadSum);
 
         } catch (Exception e) {
             System.err.println("Something went wrong.");
@@ -43,14 +32,15 @@ public class WayFinder {
             if (f != null) {
                 f.close();
 
+            }
         }
     }
-        }
 
-    public static int findingTheWay(String[][] routes, int routeCount, String startCity, String endCity) {
+    public static String findingTheWay(String[][] routes, int routeCount, String startCity, String endCity) {
         // Create a list of all unique cities
         String[] cities = new String[routeCount * 2]; // Maximum size, since each route can have 2 cities
         int citiesCount = 0;
+        int minimumTime = 0;
 
         // Populate the cities array
         for (int i = 0; i < routeCount; i++) {
@@ -69,17 +59,17 @@ public class WayFinder {
         int endCityIndex = findCityIndex(cities, citiesCount, endCity);
 
         if (startCityIndex == -1 || endCityIndex == -1) {
-            System.out.println("Error: Start or end city not found.");
-            return -1;
+            String err = "Error: Start or end city not found.";
+            System.out.println(err);
+            return err;
         }
 
         // Create an array to keep track of the shortest distance to each city
         int[] distances = new int[citiesCount];
-        String[] travelledCities = new String[citiesCount];
-
-        for(int i=0; i<citiesCount;i++){
-            distances[i]=Integer.MAX_VALUE;
-            travelledCities[i]=null;
+        int[] predecessors = new int[citiesCount]; // To track the path (previous city for each city)
+        for (int i = 0; i < citiesCount; i++) {
+            distances[i] = Integer.MAX_VALUE;
+            predecessors[i] = -1; // Initialize predecessors to -1 (no predecessor)
         }
 
         distances[startCityIndex] = 0; // Starting city has distance 0
@@ -99,16 +89,18 @@ public class WayFinder {
 
             if (currentCityIndex == -1) {
                 // If no valid city is found, no path exists
-                System.out.println("Error: No path exists from " + startCity + " to " + endCity);
-                return -1;
+                String err = "Error: No path exists from " + startCity + " to " + endCity;
+                System.out.println(err);
+                return err;
             }
 
             // Mark the current city as visited
             visited[currentCityIndex] = true;
 
-            // If we have reached the destination city, return the distance
+            // If we have reached the destination city, break
             if (currentCityIndex == endCityIndex) {
-                return distances[currentCityIndex];
+                minimumTime = distances[currentCityIndex];
+                break;
             }
 
             // Explore the routes from the current city
@@ -125,15 +117,30 @@ public class WayFinder {
                     // Calculate the new distance to the next city
                     int newDistance = distances[currentCityIndex] + roadTime;
 
-                    // If the new distance is shorter, update the distance for the next city
+                    // If the new distance is shorter, update the distance and predecessor
                     if (newDistance < distances[nextCityIndex]) {
                         distances[nextCityIndex] = newDistance;
-                        travelledCities[nextCityIndex] = cities[currentCityIndex];
+                        predecessors[nextCityIndex] = currentCityIndex; // Update predecessor
                     }
                 }
             }
         }
+
+        // Construct the path using the predecessors array
+        String pathString = "";
+        int traceIndex = endCityIndex;
+        while (traceIndex != -1) {
+            if (pathString.isEmpty()) {
+                pathString = cities[traceIndex];
+            } else {
+                pathString = cities[traceIndex] + " -> " + pathString;
+            }
+            traceIndex = predecessors[traceIndex]; // Move to the predecessor
+        }
+
+        return "Fastest Way: " + pathString + "\nTotal Time: " + minimumTime + " min";
     }
+
 
     // Helper method to check if a city is already in the cities array
     private static boolean containsCity(String[] cities, int citiesCount, String city) {
@@ -155,9 +162,6 @@ public class WayFinder {
         }
         return -1; // City not found
     }
-
-
-
 
 
 }
