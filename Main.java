@@ -1,6 +1,7 @@
 package SE_115_Maps;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.io.File;
 
@@ -26,7 +27,7 @@ public class Main {
             }
 
             // Reading the file and initializing the data
-            Scanner fileScanner = new Scanner(new File(fileName));
+            Scanner fileScanner = new Scanner(Paths.get(fileName));
 
             // 1st Line - City Number
             cityCount = Integer.parseInt(fileScanner.nextLine().trim());
@@ -62,7 +63,7 @@ public class Main {
             }
 
             WayFinder wayfinder = new WayFinder();
-            wayfinder.findPath();
+            wayfinder.findPath(routeCount, routes, startCity, endCity);
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found: " + fileName);
         } catch (Exception e) {
@@ -120,7 +121,7 @@ public class Main {
                 String routLine = fileScanner.nextLine();
                 String[] routeParts = routLine.split(" ");
                 if (routeParts.length != 3 || !isInteger(routeParts[2])) {
-                    System.out.println("Error : There should be route at Line " + (4 + i) + " - Invalid route format");
+                    System.out.println("Error Line:" + (4 + i) + " - Invalid route format");
                     return false;
                 }
             }
@@ -133,7 +134,11 @@ public class Main {
             String lastLine = fileScanner.nextLine();
             String[] startEnd = lastLine.split(" ");
             if (startEnd.length != 2) {
-                System.out.println("Error Line: " + (4 + routeCount) + " - Invalid start/end city format");
+                if (!fileScanner.hasNextLine()) {
+                    System.out.println("Error Line: " + (4 + routeCount) + " - Invalid start/end city format");
+                } else {
+                    System.out.println("Error Line: " + (4 + routeCount) + " - Unbounded route count");
+                }
                 return false;
             }
             return true;
@@ -150,34 +155,5 @@ public class Main {
         } catch (NumberFormatException e) {
             return false;
         }
-    }
-
-    // Static getter methods
-    public static int getCityCount() {
-        return cityCount;
-    }
-
-    public static int getRouteCount() {
-        return routeCount;
-    }
-
-    public static City[] getCities() {
-        return cities;
-    }
-
-    public static String[][] getRoutes() {
-        return routes;
-    }
-
-    public static String getStartCity() {
-        return startCity;
-    }
-
-    public static String getEndCity() {
-        return endCity;
-    }
-
-    public static CountryMap getCountryMap() {
-        return countryMap;
     }
 }

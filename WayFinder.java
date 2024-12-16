@@ -5,27 +5,16 @@ import java.util.Formatter;
 public class WayFinder {
 
     // Method to find a path and display the details
-    public void findPath() {
-        int routeCount = Main.getRouteCount();
-        String[][] routes = Main.getRoutes();
-        String startCity = Main.getStartCity();
-        String endCity = Main.getEndCity();
+    public void findPath(int routeCount, String[][] routes, String startCity, String endCity) {
 
-        System.out.println("Routes: ");
-        for (String[] route : routes) {
-            System.out.println("- From " + route[0] + " to " + route[1] + " with cost " + route[2]);
-        }
         // Call the pathfinding algorithm
         String roadSum = findingTheWay(routes, routeCount, startCity, endCity);
-//        if (roadSum != -1) {
-//            System.out.println("Shortest total road time from " + startCity + " to " + endCity + ": " + roadSum);
-//        }
         Formatter f = null;
 
         try {
             f = new Formatter("output.txt");
             f.format(roadSum);
-
+            System.out.println("File read is successful!");
         } catch (Exception e) {
             System.err.println("Something went wrong.");
         } finally {
@@ -40,7 +29,7 @@ public class WayFinder {
         // Create a list of all unique cities
         String[] cities = new String[routeCount * 2]; // Maximum size, since each route can have 2 cities
         int citiesCount = 0;
-        int minimumTime = 0;
+        int minimumTime;
 
         // Populate the cities array
         for (int i = 0; i < routeCount; i++) {
