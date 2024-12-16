@@ -1,4 +1,4 @@
-package GitDeneme;
+package SE_115_Maps;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;

@@ -1,4 +1,5 @@
-package GitDeneme;
+package SE_115_Maps;
+
 public class City {
     private String name;
 

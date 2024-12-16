@@ -1,4 +1,4 @@
-package GitDeneme;
+package SE_115_Maps;
 
 public class CountryMap {
     private City[] cities;
