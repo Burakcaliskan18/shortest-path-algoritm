@@ -1,16 +1,13 @@
 package SE_115_Maps;
 
 import java.util.Formatter;
-
 public class WayFinder {
-
-    // Method to find a path and display the details
-    public void findPath(int routeCount, String[][] routes, String startCity, String endCity) {
-
-        // Call the pathfinding algorithm
+    public void writeFastestPathToFile(int routeCount, String[][] routes, String startCity, String endCity) {
         String roadSum = findingTheWay(routes, routeCount, startCity, endCity);
+        if (roadSum.contains("Warning") || roadSum.contains("Error")) {
+            return;
+        }
         Formatter f = null;
-
         try {
             f = new Formatter("output.txt");
             f.format(roadSum);
@@ -26,12 +23,15 @@ public class WayFinder {
     }
 
     public static String findingTheWay(String[][] routes, int routeCount, String startCity, String endCity) {
-        // Create a list of all unique cities
-        String[] cities = new String[routeCount * 2]; // Maximum size, since each route can have 2 cities
+        if (startCity.equals(endCity)) {
+            String warning = "Error Line: " + (4 + routeCount) + " - Start and End city are the same.";
+            System.out.println(warning);
+            return warning;
+        }
+        String[] cities = new String[routeCount * 2];
         int citiesCount = 0;
         int minimumTime;
 
-        // Populate the cities array
         for (int i = 0; i < routeCount; i++) {
             String fromCity = routes[i][0];
             String toCity = routes[i][1];
@@ -42,8 +42,6 @@ public class WayFinder {
                 cities[citiesCount++] = toCity;
             }
         }
-
-        // Find the indices of the start and end cities
         int startCityIndex = findCityIndex(cities, citiesCount, startCity);
         int endCityIndex = findCityIndex(cities, citiesCount, endCity);
 

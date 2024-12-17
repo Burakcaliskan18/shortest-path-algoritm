@@ -25,8 +25,6 @@ public class Main {
             if (!validateFileFormat(fileName)) {
                 return;
             }
-
-            // Reading the file and initializing the data
             Scanner fileScanner = new Scanner(Paths.get(fileName));
 
             // 1st Line - City Number
@@ -38,7 +36,6 @@ public class Main {
             for (int i = 0; i < cityCount; i++) {
                 cities[i] = new City(cityNames[i]);
             }
-
             // 3rd Line - Route Number
             routeCount = Integer.parseInt(fileScanner.nextLine().trim());
 
@@ -63,7 +60,7 @@ public class Main {
             }
 
             WayFinder wayfinder = new WayFinder();
-            wayfinder.findPath(routeCount, routes, startCity, endCity);
+            wayfinder.writeFastestPathToFile(routeCount, routes, startCity, endCity);
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found: " + fileName);
         } catch (Exception e) {
