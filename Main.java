@@ -6,20 +6,11 @@ import java.util.Scanner;
 import java.io.File;
 
 public class Main {
-    private static int cityCount;
-    private static int routeCount;
-    private static City[] cities;
-    private static String[][] routes;
-    private static String startCity;
-    private static String endCity;
-    private static CountryMap countryMap;
 
     public static void main(String[] args) {
-
-        // Take the file name from the user
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the name of the input file: ");
-        String fileName = sc.nextLine();
+        String fileName = sc.nextLine(); // args[0];
 
         try {
             if (!validateFileFormat(fileName)) {
@@ -28,30 +19,30 @@ public class Main {
             Scanner fileScanner = new Scanner(Paths.get(fileName));
 
             // 1st Line - City Number
-            cityCount = Integer.parseInt(fileScanner.nextLine().trim());
+            int cityCount = Integer.parseInt(fileScanner.nextLine().trim());
 
             // 2nd Line - City Objects
             String[] cityNames = fileScanner.nextLine().trim().split(" ");
-            cities = new City[cityCount];
+            City[] cities = new City[cityCount];
             for (int i = 0; i < cityCount; i++) {
                 cities[i] = new City(cityNames[i]);
             }
             // 3rd Line - Route Number
-            routeCount = Integer.parseInt(fileScanner.nextLine().trim());
+            int routeCount = Integer.parseInt(fileScanner.nextLine().trim());
 
             // 4th Line - Routes
-            routes = new String[routeCount][3];
+            String[][] routes = new String[routeCount][3];
             for (int i = 0; i < routeCount; i++) {
                 routes[i] = fileScanner.nextLine().trim().split(" ");
             }
 
             // Last Line - Start and End Cities
             String[] startEnd = fileScanner.nextLine().trim().split(" ");
-            startCity = startEnd[0];
-            endCity = startEnd[1];
+            String startCity = startEnd[0];
+            String endCity = startEnd[1];
 
             // Create the CountryMap object
-            countryMap = new CountryMap(cities, routes);
+            CountryMap countryMap = new CountryMap(cities, routes);
 
             // Validate start and end cities
             if (countryMap.getCityByName(startCity) == null || countryMap.getCityByName(endCity) == null) {
@@ -72,6 +63,22 @@ public class Main {
     public static boolean validateFileFormat(String fileName) {
         try {
             Scanner fileScanner = new Scanner(new File(fileName));
+            boolean isEmpty = true;
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine().trim();
+                if (!line.isEmpty()) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+
+            if (isEmpty) {
+                System.out.println("Error: The file is empty.");
+                return false;
+            }
+
+            // Reset fileScanner to start reading from the beginning
+            fileScanner = new Scanner(new File(fileName));
 
             // 1st Line City Number
             if (!fileScanner.hasNextLine()) {
@@ -108,7 +115,6 @@ public class Main {
                 return false;
             }
             int routeCount = Integer.parseInt(thirdLine);
-
             // 4th and Other Lines Routes
             for (int i = 0; i < routeCount; i++) {
                 if (!fileScanner.hasNextLine()) {
@@ -121,6 +127,17 @@ public class Main {
                     System.out.println("Error Line:" + (4 + i) + " - Invalid route format");
                     return false;
                 }
+                String fromCity = routeParts[0];
+                String toCity = routeParts[1];
+                //  Check the validity of cities on routes.
+                if (!WayFinder.containsCity(cities, cityCount, fromCity)) {
+                    System.out.println("Error Line: " + (4 + i) + " - City '" + fromCity + "' is not in the list of cities.");
+                    return false;
+                }
+                if (!WayFinder.containsCity(cities, cityCount, toCity)) {
+                    System.out.println("Error Line: " + (4 + i) + " - City '" + toCity + "' is not in the list of cities.");
+                    return false;
+                }
             }
 
             // Last Line Start and End Cities
@@ -131,11 +148,7 @@ public class Main {
             String lastLine = fileScanner.nextLine();
             String[] startEnd = lastLine.split(" ");
             if (startEnd.length != 2) {
-                if (!fileScanner.hasNextLine()) {
-                    System.out.println("Error Line: " + (4 + routeCount) + " - Invalid start/end city format");
-                } else {
-                    System.out.println("Error Line: " + (4 + routeCount) + " - Unbounded route count");
-                }
+                System.out.println("Error Line: " + (4 + routeCount) + " - Invalid start/end city format");
                 return false;
             }
             return true;
@@ -144,6 +157,7 @@ public class Main {
             return false;
         }
     }
+
 
     public static boolean isInteger(String str) {
         try {

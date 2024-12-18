@@ -31,7 +31,6 @@ public class WayFinder {
         String[] cities = new String[routeCount * 2];
         int citiesCount = 0;
         int minimumTime;
-
         for (int i = 0; i < routeCount; i++) {
             String fromCity = routes[i][0];
             String toCity = routes[i][1];
@@ -42,6 +41,7 @@ public class WayFinder {
                 cities[citiesCount++] = toCity;
             }
         }
+
         int startCityIndex = findCityIndex(cities, citiesCount, startCity);
         int endCityIndex = findCityIndex(cities, citiesCount, endCity);
 
@@ -92,9 +92,9 @@ public class WayFinder {
 
             // Explore the routes from the current city
             for (int i = 0; i < routeCount; i++) {
-                // Check if the route starts from the current city
-                if (routes[i][0].equals(cities[currentCityIndex])) {
-                    String nextCity = routes[i][1];
+                // Check both directions: currentCity -> nextCity and nextCity -> currentCity
+                if (routes[i][0].equals(cities[currentCityIndex]) || routes[i][1].equals(cities[currentCityIndex])) {
+                    String nextCity = routes[i][0].equals(cities[currentCityIndex]) ? routes[i][1] : routes[i][0];
                     int roadTime = Integer.parseInt(routes[i][2]);
 
                     // Find the index of the next city
@@ -130,7 +130,7 @@ public class WayFinder {
 
 
     // Helper method to check if a city is already in the cities array
-    private static boolean containsCity(String[] cities, int citiesCount, String city) {
+    public static boolean containsCity(String[] cities, int citiesCount, String city) {
         for (int i = 0; i < citiesCount; i++) {
             if (cities[i].equals(city)) {
                 return true;
