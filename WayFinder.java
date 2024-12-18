@@ -51,17 +51,15 @@ public class WayFinder {
             return err;
         }
 
-        // Create an array to keep track of the shortest distance to each city
+        // An Array to keep track of the shortest distance to each city
         int[] distances = new int[citiesCount];
-        int[] predecessors = new int[citiesCount]; // To track the path (previous city for each city)
+        int[] predecessors = new int[citiesCount]; // To keep the path (previous city for each city)
         for (int i = 0; i < citiesCount; i++) {
             distances[i] = Integer.MAX_VALUE;
             predecessors[i] = -1; // Initialize predecessors to -1 (no predecessor)
         }
-
         distances[startCityIndex] = 0; // Starting city has distance 0
-
-        boolean[] visited = new boolean[citiesCount]; // To track visited cities
+        boolean[] visited = new boolean[citiesCount]; // To keep visited cities
 
         while (true) {
             // Find the city with the smallest distance that hasn't been visited yet
@@ -129,7 +127,7 @@ public class WayFinder {
     }
 
 
-    // Helper method to check if a city is already in the cities array
+    // Method to check if a city is already in the cities array
     public static boolean containsCity(String[] cities, int citiesCount, String city) {
         for (int i = 0; i < citiesCount; i++) {
             if (cities[i].equals(city)) {
@@ -139,7 +137,7 @@ public class WayFinder {
         return false;
     }
 
-    // Helper method to find the index of a city in the cities array
+    // Method to find the index of a city in the cities array
     private static int findCityIndex(String[] cities, int citiesCount, String city) {
         for (int i = 0; i < citiesCount; i++) {
             if (cities[i].equals(city)) {

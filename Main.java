@@ -158,7 +158,7 @@ public class Main {
         }
     }
 
-
+    //Method to check that the City and Route Counts are integers.
     public static boolean isInteger(String str) {
         try {
             Integer.parseInt(str);
