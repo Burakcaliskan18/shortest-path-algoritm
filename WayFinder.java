@@ -7,6 +7,7 @@ public class WayFinder {
         if (roadSum.contains("Warning") || roadSum.contains("Error")) {
             return;
         }
+        //File Writing Part
         Formatter f = null;
         try {
             f = new Formatter("output.txt");
@@ -21,7 +22,7 @@ public class WayFinder {
             }
         }
     }
-
+    //General algorithm method to find the fastest way.
     public static String findingTheWay(String[][] routes, int routeCount, String startCity, String endCity,City[] cityArray) {
         if (startCity.equals(endCity)) {
             String warning = "Error Line: " + (4 + routeCount) + " - Start and End city are the same.";
@@ -34,16 +35,6 @@ public class WayFinder {
         for(int i =0;i<cityArray.length;i++) {
             cities[i] = cityArray[i].getName();
         }
-//        for (int i = 0; i < routeCount; i++) {
-//            String fromCity = routes[i][0];
-//            String toCity = routes[i][1];
-//            if (!containsCity(cities, citiesCount, fromCity)) {
-//                cities[citiesCount++] = fromCity;
-//            }
-//            if (!containsCity(cities, citiesCount, toCity)) {
-//                cities[citiesCount++] = toCity;
-//            }
-//        }
 
         int startCityIndex = findCityIndex(cities, citiesCount, startCity);
         int endCityIndex = findCityIndex(cities, citiesCount, endCity);
@@ -54,7 +45,7 @@ public class WayFinder {
             return err;
         }
 
-        // An Array to keep track of the shortest distance to each city
+        // An Array to keep track of the shortest time to each city
         int[] times = new int[citiesCount];
         int[] predecessors = new int[citiesCount]; // To keep the path (previous city for each city)
         for (int i = 0; i < citiesCount; i++) {
@@ -65,7 +56,7 @@ public class WayFinder {
         boolean[] visited = new boolean[citiesCount]; // To keep visited cities
 
         while (true) {
-            // Find the city with the smallest distance that hasn't been visited yet
+            // Find the city with the shortest time that hasn't been visited yet
             int currentCityIndex = -1;
             int currentDistance = Integer.MAX_VALUE;
             for (int i = 0; i < citiesCount; i++) {
@@ -107,10 +98,10 @@ public class WayFinder {
                     int nextCityIndex = findCityIndex(cities, citiesCount, nextCity);
                     if (nextCityIndex == -1) continue; // Skip if the next city is not found
 
-                    // Calculate the new distance to the next city
+                    // Calculate the new time to the next city
                     int newTime = times[currentCityIndex] + roadTime;
 
-                    // If the new distance is shorter, update the distance and predecessor
+                    // If the new time is shorter, update the time and predecessor
                     if (newTime < times[nextCityIndex]) {
                         times[nextCityIndex] = newTime;
                         predecessors[nextCityIndex] = currentCityIndex; // Update predecessor
