@@ -2,8 +2,8 @@ package SE_115_Maps;
 
 import java.util.Formatter;
 public class WayFinder {
-    public void writeFastestPathToFile(int routeCount, String[][] routes, String startCity, String endCity) {
-        String roadSum = findingTheWay(routes, routeCount, startCity, endCity);
+    public void writeFastestPathToFile(int routeCount, String[][] routes, String startCity, String endCity, City[] cities) {
+        String roadSum = findingTheWay(routes, routeCount, startCity, endCity,cities);
         if (roadSum.contains("Warning") || roadSum.contains("Error")) {
             return;
         }
@@ -22,25 +22,28 @@ public class WayFinder {
         }
     }
 
-    public static String findingTheWay(String[][] routes, int routeCount, String startCity, String endCity) {
+    public static String findingTheWay(String[][] routes, int routeCount, String startCity, String endCity,City[] cityArray) {
         if (startCity.equals(endCity)) {
             String warning = "Error Line: " + (4 + routeCount) + " - Start and End city are the same.";
             System.out.println(warning);
             return warning;
         }
-        String[] cities = new String[routeCount * 2];
-        int citiesCount = 0;
+        String[] cities = new String[cityArray.length];
+        int citiesCount = cities.length;
         int minimumTime;
-        for (int i = 0; i < routeCount; i++) {
-            String fromCity = routes[i][0];
-            String toCity = routes[i][1];
-            if (!containsCity(cities, citiesCount, fromCity)) {
-                cities[citiesCount++] = fromCity;
-            }
-            if (!containsCity(cities, citiesCount, toCity)) {
-                cities[citiesCount++] = toCity;
-            }
+        for(int i =0;i<cityArray.length;i++) {
+            cities[i] = cityArray[i].getName();
         }
+//        for (int i = 0; i < routeCount; i++) {
+//            String fromCity = routes[i][0];
+//            String toCity = routes[i][1];
+//            if (!containsCity(cities, citiesCount, fromCity)) {
+//                cities[citiesCount++] = fromCity;
+//            }
+//            if (!containsCity(cities, citiesCount, toCity)) {
+//                cities[citiesCount++] = toCity;
+//            }
+//        }
 
         int startCityIndex = findCityIndex(cities, citiesCount, startCity);
         int endCityIndex = findCityIndex(cities, citiesCount, endCity);
@@ -52,13 +55,13 @@ public class WayFinder {
         }
 
         // An Array to keep track of the shortest distance to each city
-        int[] distances = new int[citiesCount];
+        int[] times = new int[citiesCount];
         int[] predecessors = new int[citiesCount]; // To keep the path (previous city for each city)
         for (int i = 0; i < citiesCount; i++) {
-            distances[i] = Integer.MAX_VALUE;
+            times[i] = Integer.MAX_VALUE;
             predecessors[i] = -1; // Initialize predecessors to -1 (no predecessor)
         }
-        distances[startCityIndex] = 0; // Starting city has distance 0
+        times[startCityIndex] = 0; // Starting city has distance 0
         boolean[] visited = new boolean[citiesCount]; // To keep visited cities
 
         while (true) {
@@ -66,8 +69,8 @@ public class WayFinder {
             int currentCityIndex = -1;
             int currentDistance = Integer.MAX_VALUE;
             for (int i = 0; i < citiesCount; i++) {
-                if (!visited[i] && distances[i] < currentDistance) {
-                    currentDistance = distances[i];
+                if (!visited[i] && times[i] < currentDistance) {
+                    currentDistance = times[i];
                     currentCityIndex = i;
                 }
             }
@@ -84,7 +87,7 @@ public class WayFinder {
 
             // If we have reached the destination city, break
             if (currentCityIndex == endCityIndex) {
-                minimumTime = distances[currentCityIndex];
+                minimumTime = times[currentCityIndex];
                 break;
             }
 
@@ -94,17 +97,22 @@ public class WayFinder {
                 if (routes[i][0].equals(cities[currentCityIndex]) || routes[i][1].equals(cities[currentCityIndex])) {
                     String nextCity = routes[i][0].equals(cities[currentCityIndex]) ? routes[i][1] : routes[i][0];
                     int roadTime = Integer.parseInt(routes[i][2]);
+                    if (roadTime <0 ){
+                        String err = "Error: Time must be non-negative value.";
+                        System.out.println(err);
+                        return err;
+                    }
 
                     // Find the index of the next city
                     int nextCityIndex = findCityIndex(cities, citiesCount, nextCity);
                     if (nextCityIndex == -1) continue; // Skip if the next city is not found
 
                     // Calculate the new distance to the next city
-                    int newDistance = distances[currentCityIndex] + roadTime;
+                    int newTime = times[currentCityIndex] + roadTime;
 
                     // If the new distance is shorter, update the distance and predecessor
-                    if (newDistance < distances[nextCityIndex]) {
-                        distances[nextCityIndex] = newDistance;
+                    if (newTime < times[nextCityIndex]) {
+                        times[nextCityIndex] = newTime;
                         predecessors[nextCityIndex] = currentCityIndex; // Update predecessor
                     }
                 }
@@ -139,7 +147,7 @@ public class WayFinder {
 
     // Method to find the index of a city in the cities array
     private static int findCityIndex(String[] cities, int citiesCount, String city) {
-        for (int i = 0; i < citiesCount; i++) {
+        for (int i = 0; i < cities.length; i++) {
             if (cities[i].equals(city)) {
 
                 return i;

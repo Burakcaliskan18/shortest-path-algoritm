@@ -51,7 +51,7 @@ public class Main {
             }
 
             WayFinder wayfinder = new WayFinder();
-            wayfinder.writeFastestPathToFile(routeCount, routes, startCity, endCity);
+            wayfinder.writeFastestPathToFile(routeCount, routes, startCity, endCity, cities);
         } catch (FileNotFoundException e) {
             System.out.println("Error: File not found: " + fileName);
         } catch (Exception e) {
