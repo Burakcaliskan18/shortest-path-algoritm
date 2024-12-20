@@ -9,8 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the name of the input file: ");
-        String fileName = sc.nextLine(); // args[0];
+        String fileName = args[0];
 
         try {
             if (!validateFileFormat(fileName)) {

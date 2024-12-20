@@ -52,7 +52,7 @@ public class WayFinder {
             times[i] = Integer.MAX_VALUE;
             predecessors[i] = -1; // Initialize predecessors to -1 (no predecessor)
         }
-        times[startCityIndex] = 0; // Starting city has distance 0
+        times[startCityIndex] = 0; // Starting city has time 0
         boolean[] visited = new boolean[citiesCount]; // To keep visited cities
 
         while (true) {
